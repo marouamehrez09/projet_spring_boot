@@ -3,6 +3,8 @@ package com.example.suppliermanagement.entity;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,6 +23,7 @@ public class CommandeAchat {
     private Long id;
     
     @ManyToOne
+    @JsonBackReference
     private Fournisseur fournisseur;
     
     private Date date;

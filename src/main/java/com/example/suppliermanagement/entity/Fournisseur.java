@@ -2,6 +2,10 @@ package com.example.suppliermanagement.entity;
 
 import jakarta.persistence.*;
 import java.util.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import lombok.*;
 @Entity
 @Data @NoArgsConstructor @AllArgsConstructor
@@ -14,9 +18,12 @@ public class Fournisseur {
     private double note;
     
     @OneToMany(mappedBy = "fournisseur")
+    //@JsonManagedReference
+    @JsonIgnore  //  évite les boucles infinies lors des retours JSON
     private List<CommandeAchat> commandes;
     
     @OneToMany(mappedBy = "fournisseur")
+    @JsonIgnore
     private List<HistoriqueAchats> historique;
 
 	public Long getId() {

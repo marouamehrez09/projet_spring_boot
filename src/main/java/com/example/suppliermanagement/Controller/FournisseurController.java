@@ -3,6 +3,7 @@ package com.example.suppliermanagement.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,56 +12,63 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.suppliermanagement.Repository.FournisseurRepository;
+import com.example.suppliermanagement.Service.FournisseurService;
 import com.example.suppliermanagement.entity.Fournisseur;
+
+import lombok.RequiredArgsConstructor;
 
 
 @RestController
 @RequestMapping("/api/fournisseurs")
-@CrossOrigin("*")
+@RequiredArgsConstructor
 public class FournisseurController {
-    
-    @Autowired
-    private FournisseurRepository fournisseurRepository;
-    
+    private final FournisseurService fournisseurService;
+
+    public FournisseurController(FournisseurService fournisseurService) {
+       this.fournisseurService = fournisseurService;
+    }
     @GetMapping
-    public List<Fournisseur> getAllFournisseurs() {
-        return fournisseurRepository.findAll();
+    public ResponseEntity<List<Fournisseur>> getAllFournisseurs() {
+        return ResponseEntity.ok(fournisseurService.getAllFournisseurs());
     }
     
     @GetMapping("/{id}")
-    public Fournisseur getFournisseurById(@PathVariable Long id) {
-        return fournisseurRepository.findById(id).orElseThrow(() -> 
-            new RuntimeException("Fournisseur non trouvé"));
+    public ResponseEntity<Fournisseur> getFournisseurById(@PathVariable Long id) {
+        return ResponseEntity.ok(fournisseurService.getFournisseurById(id));
     }
     
     @PostMapping
-    public Fournisseur createFournisseur(@RequestBody Fournisseur fournisseur) {
-        return fournisseurRepository.save(fournisseur);
+    public ResponseEntity<Fournisseur> createFournisseur(@RequestBody Fournisseur fournisseur) {
+        return ResponseEntity.ok(fournisseurService.saveFournisseur(fournisseur));
     }
     
     @PutMapping("/{id}")
-    public Fournisseur updateFournisseur(@PathVariable Long id, @RequestBody Fournisseur fournisseurDetails) {
-        Fournisseur fournisseur = fournisseurRepository.findById(id).orElseThrow(() -> 
-            new RuntimeException("Fournisseur non trouvé"));
-        
-        fournisseur.setNom(fournisseurDetails.getNom());
-        fournisseur.setContact(fournisseurDetails.getContact());
-        fournisseur.setQualite_service(fournisseurDetails.getQualite_service());
-        fournisseur.setNote(fournisseurDetails.getNote());
-        
-        return fournisseurRepository.save(fournisseur);
+    public ResponseEntity<Fournisseur> updateFournisseur(@PathVariable Long id, @RequestBody Fournisseur fournisseur) {
+        return ResponseEntity.ok(fournisseurService.updateFournisseur(id, fournisseur));
     }
     
     @DeleteMapping("/{id}")
-    public void deleteFournisseur(@PathVariable Long id) {
-        fournisseurRepository.deleteById(id);
+    public ResponseEntity<String> deleteFournisseur(@PathVariable Long id) {
+        fournisseurService.deleteFournisseur(id);
+        return ResponseEntity.ok("Fournisseur supprimé avec succès");
     }
     
-    @GetMapping("/note/{note}")
-    public List<Fournisseur> getFournisseursByNote(@PathVariable double note) {
-        return fournisseurRepository.findByNoteGreaterThanEqual(note);
+    @GetMapping("/search")
+    public ResponseEntity<List<Fournisseur>> searchFournisseurs(@RequestParam String nom) {
+        return ResponseEntity.ok(fournisseurService.searchFournisseurs(nom));
+    }
+    
+    @GetMapping("/note-min/{note}")
+    public ResponseEntity<List<Fournisseur>> getFournisseursByNoteMin(@PathVariable double note) {
+        return ResponseEntity.ok(fournisseurService.getFournisseursByNoteMin(note));
+    }
+    
+    @GetMapping("/moyenne-notes")
+    public ResponseEntity<Double> getMoyenneNotes() {
+        return ResponseEntity.ok(fournisseurService.calculateMoyenneNotes());
     }
 }

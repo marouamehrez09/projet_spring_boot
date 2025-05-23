@@ -2,6 +2,9 @@ package com.example.suppliermanagement.entity;
 
 import jakarta.persistence.*;
 import java.util.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.*;
 @Entity
 @Data @NoArgsConstructor @AllArgsConstructor
@@ -10,6 +13,7 @@ public class LigneCommandeAchat {
     private Long id;
     
     @ManyToOne
+    @JsonIgnore 
     private CommandeAchat commande;
     
     private String produit;
